@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel BRC - Dashboard Executivo</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+    <!-- Custom CSS with cache-busting -->
+    <link rel="stylesheet" href="assets/css/home.css?v=3" />
+  </head>
+  <body>
+    <!-- Mobile Top Bar -->
+    <div class="mobile-top-bar d-flex d-lg-none">
+      <button
+        class="btn btn-link text-white p-0 border-0"
+        id="btn-toggle-sidebar"
+      >
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <span class="text-white fw-bold fs-5">Painel BRC</span>
+      <div style="width: 32px"></div>
+    </div>
+
+    <!-- Sidebar Layout Container -->
+    <div class="d-flex">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar-nav bg-ligth">
+        <div
+          class="sidebar-header px-4 py-3 border-bottom border-secondary-subtle d-flex justify-content-between align-items-center"
+        >
+          <a
+            class="d-flex align-items-center gap-2 text-decoration-none"
+            href="index.html"
+          >
+            <span class="d-flex align-items-center justify-content-center">
+              <img
+                src="assets/img/logo.png"
+                alt="logo marca Brasil componentes automotivos"
+                width="50px"
+              />
+            </span>
+            <div class="brand-text">
+              <span class="brand-title"
+                >Painel <span class="text-primary-green">BRC</span></span
+              >
+              <span class="brand-subtitle">BI & Analytics</span>
+            </div>
+          </a>
+          <button
+            class="btn-close btn-close-white d-lg-none p-0 border-0"
+            id="btn-close-sidebar"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="sidebar-content py-3">
+          <ul class="nav flex-column px-2 gap-1">
+            <li class="nav-item">
+              <a class="nav-link active" href="index.html"
+                ><i class="bi bi-speedometer2 me-2"></i> Painel Inicial</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="semanal.html"
+                ><i class="bi bi-calendar-range me-2"></i> Semanal</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="mensal.html"
+                ><i class="bi bi-calendar-month me-2"></i> Mensal</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="supervisor.html"
+                ><i class="bi bi-briefcase me-2"></i> Por Supervisor</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pedidos.html"
+                ><i class="bi bi-hourglass-split me-2"></i> Pedidos Pendentes</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="relatorios.html"
+                ><i class="bi bi-file-earmark-pdf-fill me-2"></i> Relatórios
+                PDF</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="logs.html"
+                ><i class="bi bi-bug me-2"></i> Logs de Erro</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="sidebar-footer p-3 border-top border-secondary-subtle mt-auto text-center small text-light-50"
+        >
+          <div class="text-muted">
+            <i class="bi bi-clock me-1 text-primary-green"></i>
+            <span id="current-date-str" style="font-size: 0.8rem;"
+              >Carregando...</span
+            >
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Workspace -->
+      <main class="main-content flex-grow-1 p-4 bg-light-workspace">
+        <!-- Dashboard Header -->
+        <header
+          class="d-flex justify-content-between align-items-center flex-wrap mb-4 pb-2 border-bottom"
+        >
+          <div>
+            <h1 class="h2 fw-bold text-dark mb-1">Painel Geral de Vendas</h1>
+            <p class="text-muted mb-0">
+              Acompanhamento em tempo real de faturamento, novos clientes e
+              inadimplência.
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+            <button
+              class="btn btn-outline-dark btn-sm rounded-3"
+              id="btn-refresh-dash"
+            >
+              <i class="bi bi-arrow-clockwise me-1"></i> Atualizar Painel
+            </button>
+          </div>
+        </header>
+
+        <!-- Grid Layout -->
+        <div class="container-fluid px-0">
+          <!-- Row 1: Heat Map (Large, side) & KPIs -->
+          <section class="row g-4 mb-4">
+            <!-- Left: Large Sales Heat Map -->
+            <div class="col-lg-8">
+              <div class="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <div>
+                    <h3 class="h5 fw-bold text-black mb-1">
+                      Distribuição Geográfica de Vendas
+                    </h3>
+                    <p class="text-muted small mb-0">
+                      Faturamento acumulado e pedidos faturados por estado.
+                    </p>
+                  </div>
+                </div>
+                <div id="container-mapa-calor" style="height: 600px">
+                  <div class="text-center p-5 mt-5">
+                    <div
+                      class="spinner-border text-primary-green mb-3"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Carregando mapa...</span>
+                    </div>
+                    <p class="text-muted small">
+                      Processando dados geográficos...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: KPI Cards and Supervisor Pie Chart -->
+            <div class="col-lg-4 d-flex flex-column gap-4">
+              <!-- KPI 1 -->
+              <div class="card kpi-card shadow-sm border-0 p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="text-muted small fw-medium uppercase"
+                      >Pedidos de Hoje</span
+                    >
+                    <h3
+                      class="h2 fw-bold text-black mt-1 mb-0"
+                      id="card-pedidos-hoje"
+                    >
+                      0
+                    </h3>
+                  </div>
+                  <div
+                    class="icon-shape bg-light-green rounded-circle text-primary-green"
+                  >
+                    <i class="bi bi-cart-check-fill fs-4"></i>
+                  </div>
+                </div>
+              </div>
+              <!-- KPI 2 -->
+              <div class="card kpi-card shadow-sm border-0 p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="text-muted small fw-medium uppercase"
+                      >Pedidos do Mês</span
+                    >
+                    <h3
+                      class="h2 fw-bold text-black mt-1 mb-0"
+                      id="card-pedidos-mes"
+                    >
+                      0
+                    </h3>
+                  </div>
+                  <div
+                    class="icon-shape bg-light-green rounded-circle text-primary-green"
+                  >
+                    <i class="bi bi-basket3-fill fs-4"></i>
+                  </div>
+                </div>
+              </div>
+              <!-- KPI 3 -->
+              <div class="card kpi-card shadow-sm border-0 p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="text-muted small fw-medium uppercase"
+                      >Novos Clientes Hoje</span
+                    >
+                    <h3
+                      class="h2 fw-bold text-black mt-1 mb-0"
+                      id="card-clientes-novos"
+                    >
+                      0
+                    </h3>
+                  </div>
+                  <div
+                    class="icon-shape bg-light-green rounded-circle text-primary-green"
+                  >
+                    <i class="bi bi-people-fill fs-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Faturamento por Supervisor Pie Chart -->
+              <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
+                <h3 class="h6 fw-bold text-black mb-1">
+                  Pedidos por Supervisor
+                </h3>
+                <p class="text-muted small mb-3">
+                  Distribuição das vendas do mês.
+                </p>
+                <div
+                  id="grafico_temp_real_pizza"
+                  style="
+                    min-height: 250px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <div
+                    class="spinner-border text-primary-green spinner-border-sm"
+                    role="status"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Row 2: Sales Trend Line & Weekly Best Sellers Bar Chart -->
+          <section class="row g-4 mb-4">
+            <!-- Left: Sales Trend -->
+            <div class="col-lg-7">
+              <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h3 class="h5 fw-bold text-black mb-1">
+                  Evolução Mensal de Vendas
+                </h3>
+                <p class="text-muted small mb-3">
+                  Faturamento acumulado em Reais (BRL) do ano atual.
+                </p>
+                <div
+                  id="grafico_temp_real_linha"
+                  style="
+                    min-height: 380px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <div
+                    class="spinner-border text-primary-green"
+                    role="status"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Best Sellers Bar Chart -->
+            <div class="col-lg-5">
+              <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h3 class="h5 fw-bold text-black mb-1">
+                  Melhores 10 da Semana
+                </h3>
+                <p class="text-muted small mb-3">
+                  Faturamento acumulado na semana corrente por vendedor.
+                </p>
+                <div
+                  id="grafico_temp_real_basico"
+                  style="
+                    min-height: 380px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <div
+                    class="spinner-border text-primary-green"
+                    role="status"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Row 3: Inadimplência Module -->
+          <section
+            class="card border-0 shadow-sm rounded-4 p-4 mb-4"
+            id="section-inadimplencia"
+          >
+            <header class="mb-4">
+              <div class="d-flex align-items-center gap-2">
+                <span
+                  class="icon-box-small bg-light-green text-primary-green rounded-3"
+                >
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </span>
+                <div>
+                  <h3 class="h4 fw-bold text-black mb-0">
+                    Módulo de Inadimplência
+                  </h3>
+                  <p class="text-muted small mb-0">
+                    Monitore os índices de atraso de pagamento por representante
+                    e supervisor.
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            <div class="row g-4">
+              <!-- Left: Representative List and Filters -->
+              <div class="col-lg-5 border-end pe-lg-4">
+                <div class="mb-3">
+                  <label
+                    for="filtro_vendedor_gerente"
+                    class="form-label text-muted small fw-bold uppercase"
+                    >Supervisor ou Gerente</label
+                  >
+                  <div class="input-group">
+                    <select
+                      id="filtro_vendedor_gerente"
+                      class="form-select border-secondary-subtle"
+                    >
+                      <option value="">Todos os representantes</option>
+                      <optgroup
+                        label="Supervisores"
+                        id="select-supervisores-opt"
+                      >
+                        <!-- Dynamic list of supervisors -->
+                      </optgroup>
+                      <optgroup label="Gerentes">
+                        <option value="390">Lucena</option>
+                        <option value="354">Luciano</option>
+                      </optgroup>
+                    </select>
+                    <button
+                      class="btn btn-primary-green text-white px-3"
+                      id="btn-aplicar-filtro"
+                    >
+                      <i class="bi bi-funnel-fill me-1"></i> Filtrar
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label
+                    for="search_representante"
+                    class="form-label text-muted small fw-bold uppercase"
+                    >Busca Rápida</label
+                  >
+                  <div class="input-group">
+                    <span
+                      class="input-group-text bg-white border-secondary-subtle"
+                      ><i class="bi bi-search text-muted"></i
+                    ></span>
+                    <input
+                      type="text"
+                      id="search_representante"
+                      class="form-control border-secondary-subtle border-start-0"
+                      placeholder="Nome, código do vendedor ou área..."
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="list-group list-group-flush rounded-3 border overflow-y-auto mb-3"
+                  id="list-representantes"
+                  style="max-height: 380px"
+                >
+                  <div class="text-center p-4">
+                    <div
+                      class="spinner-border text-primary-green"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Carregando...</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pagination -->
+                <div
+                  class="d-flex justify-content-between align-items-center px-1"
+                  id="pagination-container"
+                  style="display: none !important"
+                >
+                  <div id="pagination-info" class="small text-muted">
+                    Exibindo 0-0 de 0
+                  </div>
+                  <nav aria-label="Navegação da lista">
+                    <ul
+                      class="pagination pagination-sm mb-0"
+                      id="pagination-nav"
+                    ></ul>
+                  </nav>
+                </div>
+              </div>
+
+              <!-- Right: Details Card & Pie Chart of Inadimplência -->
+              <div class="col-lg-7 ps-lg-4">
+                <div class="row g-3">
+                  <!-- Details View -->
+                  <div class="col-md-6">
+                    <div
+                      class="card bg-light border-0 rounded-3 p-3 h-100"
+                      id="detalhes-inadimplencia-card"
+                      style="min-height: 480px; position: relative"
+                    >
+                      <!-- Placeholder message -->
+                      <div
+                        class="d-flex flex-column justify-content-center align-items-center h-100 text-center text-muted p-4"
+                        id="no-representative-selected"
+                        style="
+                          position: absolute;
+                          top: 0;
+                          left: 0;
+                          right: 0;
+                          bottom: 0;
+                        "
+                      >
+                        <i
+                          class="bi bi-info-circle-fill text-muted fs-1 mb-3"
+                        ></i>
+                        <h5>Nenhum representante selecionado</h5>
+                        <p class="small mb-0">
+                          Escolha um representante na lista ao lado para
+                          verificar os títulos vencidos e índices.
+                        </p>
+                      </div>
+                      <!-- Details Content -->
+                      <div
+                        id="representative-details-content"
+                        style="display: none"
+                      >
+                        <!-- Rendered dynamically -->
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Pie chart -->
+                  <div class="col-md-6">
+                    <div
+                      class="card border border-light-subtle rounded-3 p-3 h-100"
+                      style="min-height: 480px"
+                    >
+                      <h4 class="h6 fw-bold text-dark mb-1">
+                        Comparações de Inadimplência
+                      </h4>
+                      <p class="text-muted small mb-3">
+                        Índice dos representantes no grupo.
+                      </p>
+                      <div
+                        id="chart-inadimplencia-pizza"
+                        style="
+                          height: 400px;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                      >
+                        <div class="text-center text-muted p-4">
+                          <i
+                            class="bi bi-pie-chart-fill fs-2 mb-2 d-block text-secondary"
+                          ></i>
+                          Selecione um supervisor e aplique o filtro para
+                          visualizar o gráfico.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Highcharts Map libs -->
+    <script src="assets/libs/highcharts/highmaps.js"></script>
+    <script src="assets/libs/highcharts/exporting.js"></script>
+    <script src="assets/libs/highcharts/offline-exporting.js"></script>
+    <script src="assets/libs/highcharts/accessibility.js"></script>
+    <script src="assets/libs/highcharts/adaptive.js"></script>
+    <!-- ApexCharts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Custom JS routing -->
+    <script type="module" src="assets/js/route.js"></script>
+    <!-- Dashboard main script -->
+    <script defer type="module" src="assets/js/app.js?v=3"></script>
+    <!-- Mobile sidebar toggler -->
+    <script src="assets/js/mobile.js" defer></script>
+  </body>
+</html>

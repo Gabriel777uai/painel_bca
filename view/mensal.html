@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel BRC - Faturamento Mensal</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/home.css?v=3" />
+  </head>
+  <body>
+    <!-- Mobile Top Bar -->
+    <div class="mobile-top-bar d-flex d-lg-none">
+      <button
+        class="btn btn-link text-white p-0 border-0"
+        id="btn-toggle-sidebar"
+      >
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <span class="text-white fw-bold fs-5">Painel BRC</span>
+      <div style="width: 32px"></div>
+    </div>
+
+    <!-- Sidebar Layout Container -->
+    <div class="d-flex">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar-nav bg-ligth shadow">
+        <div
+          class="sidebar-header px-4 py-3 border-bottom border-secondary-subtle d-flex justify-content-between align-items-center"
+        >
+          <a
+            class="d-flex align-items-center gap-2 text-decoration-none"
+            href="index.html"
+          >
+            <span class="d-flex align-items-center justify-content-center">
+              <img
+                src="assets/img/logo.png"
+                alt="logo marca Brasil componentes automotivos"
+                width="50px"
+              />
+            </span>
+            <div class="brand-text">
+              <span class="brand-title"
+                >Painel <span class="text-primary-green">BRC</span></span
+              >
+              <span class="brand-subtitle">BI & Analytics</span>
+            </div>
+          </a>
+          <button
+            class="btn-close btn-close-white d-lg-none p-0 border-0"
+            id="btn-close-sidebar"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="sidebar-content py-3">
+          <ul class="nav flex-column px-2 gap-1">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html"
+                ><i class="bi bi-speedometer2 me-2"></i> Painel Inicial</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="semanal.html"
+                ><i class="bi bi-calendar-range me-2"></i> Semanal</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="mensal.html"
+                ><i class="bi bi-calendar-month me-2"></i> Mensal</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="supervisor.html"
+                ><i class="bi bi-briefcase me-2"></i> Por Supervisor</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pedidos.html"
+                ><i class="bi bi-hourglass-split me-2"></i> Pedidos Pendentes</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="relatorios.html"
+                ><i class="bi bi-file-earmark-pdf-fill me-2"></i> Relatórios
+                PDF</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="logs.html"
+                ><i class="bi bi-bug me-2"></i> Logs de Erro</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="sidebar-footer p-3 border-top border-secondary-subtle mt-auto text-center small text-light-50"
+        >
+          <div class="text-muted">
+            <i class="bi bi-clock me-1 text-primary-green"></i>
+            <span id="current-date-str" style="font-size: 0.8rem"
+              >Carregando...</span
+            >
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Workspace -->
+      <main class="main-content flex-grow-1 p-4 bg-light-workspace">
+        <!-- Header -->
+        <header
+          class="d-flex justify-content-between align-items-center flex-wrap mb-4 pb-2 border-bottom"
+        >
+          <div>
+            <h1 class="h2 fw-bold text-dark mb-1">Faturamento Mensal do RCA</h1>
+            <p class="text-muted mb-0">
+              Selecione o representante e o período de faturamento para gerar os
+              gráficos.
+            </p>
+          </div>
+        </header>
+
+        <!-- Filters Card -->
+        <section class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+          <form id="form-filtro-mensal" class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label
+                for="filtro-area"
+                class="form-label text-muted small fw-bold uppercase"
+                >Representante / Área</label
+              >
+              <select
+                id="filtro-area"
+                class="form-select border-secondary-subtle"
+                required
+              >
+                <option value="">Selecione um representante...</option>
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label
+                for="filtro-data-inicio"
+                class="form-label text-muted small fw-bold uppercase"
+                >Data Inicial</label
+              >
+              <input
+                type="date"
+                id="filtro-data-inicio"
+                class="form-control border-secondary-subtle"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label
+                for="filtro-data-fim"
+                class="form-label text-muted small fw-bold uppercase"
+                >Data Final (Comparativa)</label
+              >
+              <input
+                type="date"
+                id="filtro-data-fim"
+                class="form-control border-secondary-subtle"
+                placeholder="Opcional"
+              />
+            </div>
+            <div class="col-md-2">
+              <button
+                type="submit"
+                class="btn btn-primary-green w-100 py-2 text-white"
+              >
+                <i class="bi bi-search me-1"></i> Filtrar Gráfico
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Loading overlay -->
+        <div id="loader-mensal" class="text-center py-5 d-none">
+          <div class="spinner-border text-primary-green mb-3" role="status">
+            <span class="visually-hidden">Carregando dados...</span>
+          </div>
+          <p class="text-muted small">Carregando faturamento mensal...</p>
+        </div>
+
+        <!-- Stats and Chart Container -->
+        <div id="resultados-mensal" class="d-none">
+          <!-- Stats Row -->
+          <section class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="card kpi-card shadow-sm border-0 p-3 text-center">
+                <span class="text-muted small fw-medium uppercase"
+                  >Total Faturado</span
+                >
+                <h3
+                  class="h2 fw-bold text-black mt-1 mb-0"
+                  id="total-faturamento-men"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card kpi-card shadow-sm border-0 p-3 text-center">
+                <span class="text-muted small fw-medium uppercase"
+                  >Quantidade de Pedidos</span
+                >
+                <h3
+                  class="h2 fw-bold text-black mt-1 mb-0"
+                  id="total-pedidos-men"
+                >
+                  0
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card kpi-card shadow-sm border-0 p-3 text-center">
+                <span class="text-muted small fw-medium uppercase"
+                  >Ticket Médio</span
+                >
+                <h3
+                  class="h2 fw-bold text-black mt-1 mb-0"
+                  id="ticket-medio-men"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chart Card -->
+          <section class="card border-0 shadow-sm rounded-4 p-4">
+            <h3 class="h5 fw-bold text-black mb-1" id="grafico-titulo-men">
+              Gráfico Mensal
+            </h3>
+            <p class="text-muted small mb-3">
+              Distribuição do faturamento e quantidade de pedidos pelos meses do
+              ano.
+            </p>
+            <div id="grafico_mensal_detalhado" style="min-height: 450px">
+              <!-- Rendered by ApexCharts -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Welcome Placeholder -->
+        <div
+          id="placeholder-mensal"
+          class="text-center py-5 border rounded-4 bg-white shadow-sm"
+        >
+          <i class="bi bi-bar-chart-line text-muted fs-1 mb-3"></i>
+          <h5 class="fw-bold text-dark">Nenhum Representante Filtrado</h5>
+          <p class="text-muted small px-4">
+            Utilize o painel de filtros acima para selecionar um vendedor e a
+            faixa de datas para gerar o gráfico mensal.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ApexCharts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Custom JS routing -->
+    <script type="module" src="assets/js/route.js"></script>
+    <!-- Page script -->
+    <script defer type="module" src="assets/js/mensal.js?v=3"></script>
+    <!-- Mobile sidebar toggler -->
+    <script src="assets/js/mobile.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+/server/.env
+/server/src/php/logs/*.db
+/server/src/php/logs/*.db-journal
+/server/src/php/logs/*.db-wal
+/server/src/php/logs/*.db-shm

@@ -8,7 +8,7 @@ class AreaModel
 {
     private RequestsDatabase $db;
 
-    public function __construct(RequestsDatabase $db = null)
+    public function __construct()
     {
         $this->db = $db ?? new RequestsDatabase();
     }

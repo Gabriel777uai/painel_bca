@@ -19,7 +19,7 @@ class DashboadController extends ResponseTypeService
     private AreaModel $areaModel;
     private RequestsDatabase $db;
 
-    public function __construct(SalesModel $salesModel = null, ClientModel $clientModel = null, AreaModel $areaModel = null, RequestsDatabase $db = null)
+    public function __construct()
     {
         $this->salesModel = $salesModel ?? new SalesModel();
         $this->clientModel = $clientModel ?? new ClientModel();

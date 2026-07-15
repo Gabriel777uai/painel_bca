@@ -12,7 +12,7 @@ class AreaController extends ResponseTypeService
 {
     private AreaModel $areaModel;
 
-    public function __construct(AreaModel $areaModel = null)
+    public function __construct()
     {
         $this->areaModel = $areaModel ?? new AreaModel();
     }

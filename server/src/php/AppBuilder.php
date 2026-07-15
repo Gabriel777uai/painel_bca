@@ -39,8 +39,8 @@ class AppBuilder
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
                 ->withStatus(500);
         });
-
-        $app->group('/painel_bca/server/api/v1', function (RouteCollectorProxy $v1) {
+        $var_url_path = $_SERVER['SERVER_NAME'] == "localhost" ? "painel_bca" : "graficos_bca";
+        $app->group("/$var_url_path/server/api/v1", function (RouteCollectorProxy $v1) {
             $v1->group('/wellcome', require __DIR__ . '/routes/hello.php');
             $v1->group('/sales', require __DIR__ . '/routes/vendas.php');
             $v1->group('/area', require __DIR__ . '/routes/area.php');

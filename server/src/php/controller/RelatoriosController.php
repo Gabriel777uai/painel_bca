@@ -19,7 +19,7 @@ class RelatoriosController extends ResponseTypeService
     private AreaModel $areaModel;
     private RequestsDatabase $db;
 
-    public function __construct(ClientModel $clientModel = null, AreaModel $areaModel = null, RequestsDatabase $db = null)
+    public function __construct()
     {
         $this->clientModel = $clientModel ?? new ClientModel();
         $this->areaModel = $areaModel ?? new AreaModel();
@@ -126,53 +126,190 @@ class RelatoriosController extends ResponseTypeService
     {
         $rowsHtml = '';
         foreach ($clients as $row) {
-            $dateReal = DateTime::createFromFormat('Y-m-d', $row['data_ultima_compra']);
-            $dataFormatted = $dateReal ? $dateReal->format('d/m/Y') : 'N/A';
+            $cpd = $row['cpd_cliente'] ?? '';
+            $nome = $row['nome_cliente'] ?? '';
+            $fantasia = $row['nome_fantasia'] ?? '';
+            $cnpj = $row['cnpj'] ?? '';
+            $cpf = $row['cpf'] ?? '';
+            $cidade = $row['cidade'] ?? '';
+            $uf = $row['c_uf'] ?? '';
+            $classe = $row['c_classe'] ?? '';
+            $ultCompra = $row['data_ultima_compra'] ?? null;
+
+            $dataFormatted = 'N/A';
+            if (!empty($ultCompra)) {
+                $dateReal = DateTime::createFromFormat('Y-m-d', $ultCompra);
+                $dataFormatted = $dateReal ? $dateReal->format('d/m/Y') : 'N/A';
+            }
+            
+            $cnpjOrCpf = !empty($cnpj) ? $cnpj : (!empty($cpf) ? $cpf : 'N/A');
+            $cleanName = mb_strimwidth($nome, 0, 48, '...');
 
             $rowsHtml .= "<tr>
-                <td>{$row['cpd_cliente']}</td>
-                <td>{$row['nome_cliente']}</td>
-                <td>{$row['cnpj']}</td>
-                <td>{$row['cpf']}</td>
-                <td>{$row['cidade']}</td>
-                <td>{$row['c_classe']}</td>
-                <td>{$row['c_uf']}</td>
+                <td style='font-weight: bold; color: #4A5568;'>{$cpd}</td>
+                <td><strong>{$cleanName}</strong>" . (!empty($fantasia) ? "<br><span style='font-size: 7.5pt; color: #718096;'>{$fantasia}</span>" : "") . "</td>
+                <td>{$cnpjOrCpf}</td>
+                <td>{$cidade}</td>
+                <td style='text-align: center;'><span class='badge-uf'>{$uf}</span></td>
+                <td style='text-align: center;'><span class='badge-classe'>{$classe}</span></td>
                 <td>{$dataFormatted}</td>
             </tr>";
         }
 
+        $totalClients = count($clients);
+        $statusLabel = (strpos(strtolower($title), 'inativo') !== false) ? 'Inativos (> 6 Meses)' : 'Ativos na Carteira';
+
         return "<html lang='pt-br'>
         <head>
             <meta charset='utf-8'>
-            <title>Relatório</title>
+            <title>Relatório Executivo</title>
             <style>
-                body { font-family: 'dejavusans', sans-serif; font-size: 10pt; color: #333; }
-                h1 { font-size: 16pt; margin-bottom: 20px; color: #003399; text-align: center; border-bottom: 2px solid #003399; padding-bottom: 10px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; font-size: 9pt; }
-                th { background-color: #f2f2f2; color: #000; font-weight: bold; }
-                tr:nth-child(even) { background-color: #fafdff; }
+                @page {
+                    header: html_reportHeader;
+                    footer: html_reportFooter;
+                    margin-top: 38mm;
+                    margin-bottom: 20mm;
+                    margin-left: 10mm;
+                    margin-right: 10mm;
+                }
+                body {
+                    font-family: 'helvetica', 'arial', sans-serif;
+                    color: #2D3748;
+                    font-size: 8.5pt;
+                }
+                .header-table {
+                    width: 100%;
+                    border-bottom: 3px solid #0fa40b;
+                    padding-bottom: 10px;
+                    margin-bottom: 20px;
+                }
+                .header-title {
+                    font-size: 18pt;
+                    font-weight: bold;
+                    color: #0fa40b;
+                }
+                .header-subtitle {
+                    font-size: 9pt;
+                    color: #718096;
+                    margin-top: 2px;
+                }
+                .header-meta {
+                    text-align: right;
+                    font-size: 8.5pt;
+                    color: #4A5568;
+                    line-height: 1.4;
+                }
+                table.data-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                }
+                table.data-table th {
+                    background-color: #1A202C;
+                    color: #FFFFFF;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 7.5pt;
+                    padding: 8px 10px;
+                    border: 1px solid #1A202C;
+                    text-align: left;
+                }
+                table.data-table td {
+                    padding: 8px 10px;
+                    border-bottom: 1px solid #E2E8F0;
+                    font-size: 8pt;
+                    vertical-align: middle;
+                }
+                table.data-table tr:nth-child(even) td {
+                    background-color: #F8FAFC;
+                }
+                .badge-uf {
+                    background-color: #EDF2F7;
+                    color: #4A5568;
+                    padding: 2px 5px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                    font-size: 7pt;
+                }
+                .badge-classe {
+                    background-color: #EBF8FF;
+                    color: #2B6CB0;
+                    padding: 2px 5px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                    font-size: 7pt;
+                }
             </style>
         </head>
         <body>
-            <h1>{$title}</h1>
-            <table>
+
+            <!-- Header definition for @page -->
+            <htmlpageheader name=\"reportHeader\">
+                <table class=\"header-table\" style=\"width: 100%; border: none;\">
+                    <tr>
+                        <td style=\"width: 60%; border: none; padding: 0;\">
+                            <div class=\"header-title\">Painel BRC <span style=\"color: #068238;\">Analytics</span></div>
+                            <div class=\"header-subtitle\">Relatório Executivo de Carteira de Clientes</div>
+                        </td>
+                        <td style=\"width: 40%; text-align: right; border: none; padding: 0;\" class=\"header-meta\">
+                            <strong>Gerado em:</strong> " . date('d/m/Y H:i') . "<br>
+                            <strong>Filtro:</strong> {$title}
+                        </td>
+                    </tr>
+                </table>
+            </htmlpageheader>
+            
+            <htmlpagefooter name=\"reportFooter\">
+                <table style=\"width: 100%; border: none; border-top: 1px solid #E2E8F0; padding-top: 8px;\">
+                    <tr>
+                        <td style=\"width: 33%; border: none; font-size: 7.5pt; color: #A0AEC0; padding: 0;\">
+                            Brasil Componentes Automotivos
+                        </td>
+                        <td style=\"width: 34%; text-align: center; border: none; font-size: 7.5pt; color: #A0AEC0; padding: 0;\">
+                            Confidencial - Uso Interno
+                        </td>
+                        <td style=\"width: 33%; text-align: right; border: none; font-size: 7.5pt; color: #A0AEC0; padding: 0;\">
+                            Página {PAGENO} de {nbpg}
+                        </td>
+                    </tr>
+                </table>
+            </htmlpagefooter>
+
+            <!-- KPI Summary Section -->
+            <table style=\"width: 100%; margin-bottom: 15px; border: none; background: #F8FAFC; padding: 12px; border-radius: 8px; border: 1px solid #E2E8F0;\">
+                <tr>
+                    <td style=\"border: none; width: 33%; padding: 0;\">
+                        <div style=\"font-size: 7.5pt; color: #718096; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;\">Total de Clientes</div>
+                        <div style=\"font-size: 15pt; font-weight: bold; color: #0fa40b;\">{$totalClients}</div>
+                    </td>
+                    <td style=\"border: none; width: 33%; border-left: 1px solid #E2E8F0; padding: 0 0 0 15px;\">
+                        <div style=\"font-size: 7.5pt; color: #718096; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;\">Status da Carteira</div>
+                        <div style=\"font-size: 11pt; font-weight: bold; color: #2D3748;\">{$statusLabel}</div>
+                    </td>
+                    <td style=\"border: none; width: 33%; border-left: 1px solid #E2E8F0; padding: 0 0 0 15px;\">
+                        <div style=\"font-size: 7.5pt; color: #718096; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;\">Documento</div>
+                        <div style=\"font-size: 11pt; font-weight: bold; color: #2D3748;\">PDF Gerado Via Sistema</div>
+                    </td>
+                </tr>
+            </table>
+
+            <table class=\"data-table\">
                 <thead>
                     <tr>
-                        <th style='width: 8%;'>Código</th>
-                        <th style='width: 32%;'>Nome Cliente</th>
-                        <th style='width: 14%;'>CNPJ</th>
-                        <th style='width: 12%;'>CPF</th>
-                        <th style='width: 14%;'>Cidade</th>
-                        <th style='width: 8%;'>Classe</th>
-                        <th style='width: 4%;'>UF</th>
-                        <th style='width: 8%;'>Últ. Compra</th>
+                        <th style=\"width: 8%;\">Código</th>
+                        <th style=\"width: 38%;\">Nome Cliente / Razão Social</th>
+                        <th style=\"width: 16%;\">CNPJ / CPF</th>
+                        <th style=\"width: 18%;\">Cidade</th>
+                        <th style=\"width: 6%; text-align: center;\">UF</th>
+                        <th style=\"width: 6%; text-align: center;\">Classe</th>
+                        <th style=\"width: 8%;\">Últ. Compra</th>
                     </tr>
                 </thead>
                 <tbody>
                     {$rowsHtml}
                 </tbody>
             </table>
+
         </body>
         </html>";
     }
@@ -182,6 +319,10 @@ class RelatoriosController extends ResponseTypeService
      */
     private function generatePdfResponse(Response $response, string $html, string $filename): Response
     {
+        // Suppress any PHP warnings/notices/deprecations from corrupting the PDF binary stream
+        ini_set('display_errors', '0');
+        error_reporting(0);
+
         $tempDir = __DIR__ . '/../../../../server/src/php/logs';
         if (!is_dir($tempDir)) {
             mkdir($tempDir, 0777, true);
@@ -190,21 +331,23 @@ class RelatoriosController extends ResponseTypeService
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4-L',
-            'default_font' => 'dejavusans',
+            'default_font' => 'helvetica',
             'tempDir' => $tempDir,
             'ignore_invalid_utf8' => true,
             'showImageErrors' => true,
-            'margin_left' => 5,
-            'margin_right' => 5,
-            'margin_top' => 10,
-            'margin_bottom' => 10,
-            'margin_header' => 5,
-            'margin_footer' => 5,
-            'setAutoTopMargin' => 'stretch',
-            'setAutoBottomMargin' => 'stretch',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 38,
+            'margin_bottom' => 20,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'setAutoTopMargin' => false,
+            'setAutoBottomMargin' => false,
         ]);
 
-        ob_clean();
+        if (ob_get_length() > 0) {
+            ob_clean();
+        }
         $mpdf->WriteHTML($html);
 
         $pdfContent = $mpdf->Output('', 'S');

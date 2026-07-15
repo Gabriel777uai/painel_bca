@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+let tomSelectInstance = null;
+
 /**
  * Load all areas to dropdown list
  */
@@ -46,6 +48,31 @@ async function loadAreasDropdown() {
         // Populate dropdown
         selectArea.innerHTML = '<option value="">Selecione um representante...</option>' + 
             data.map(area => `<option value="${area.i_cdarea}">${area.i_cdarea} - ${area.c_nomearea}</option>`).join('');
+
+        if (typeof TomSelect !== 'undefined') {
+            if (tomSelectInstance) {
+                tomSelectInstance.destroy();
+            }
+            tomSelectInstance = new TomSelect(selectArea, {
+                create: false,
+                placeholder: 'Selecione um representante...',
+                allowEmptyOption: true,
+                maxOptions: null,
+                render: {
+                    option: function(data, escape) {
+                        const code = escape(data.value);
+                        const name = escape(data.text.replace(data.value + ' - ', ''));
+                        return `<div class="py-2 px-3 border-bottom border-light-subtle d-flex justify-content-between align-items-center">
+                                    <span class="text-dark">${name}</span>
+                                    <span class="badge bg-light text-secondary border font-monospace">RCA ${code}</span>
+                                </div>`;
+                    },
+                    item: function(data, escape) {
+                        return `<div class="fw-semibold text-dark">${escape(data.text)}</div>`;
+                    }
+                }
+            });
+        }
 
     } catch (e) {
         console.error('Erro ao carregar dropdown de áreas:', e);

@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+let tomSelectClientesArea = null;
+let tomSelectInativosArea = null;
+let tomSelectCidade = null;
+
 /**
  * Load areas for both active and inactive reports dropdowns
  */
@@ -67,6 +71,34 @@ async function loadAreasDropdowns() {
         selectClientesArea.innerHTML = optionsHtml;
         selectInativosArea.innerHTML = optionsHtml;
 
+        if (typeof TomSelect !== 'undefined') {
+            const tomConfig = {
+                create: false,
+                placeholder: 'Selecione um representante...',
+                allowEmptyOption: true,
+                maxOptions: null,
+                render: {
+                    option: function(data, escape) {
+                        const code = escape(data.value);
+                        const name = escape(data.text.replace(data.value + ' - ', ''));
+                        return `<div class="py-2 px-3 border-bottom border-light-subtle d-flex justify-content-between align-items-center">
+                                    <span class="text-dark">${name}</span>
+                                    <span class="badge bg-light text-secondary border font-monospace">RCA ${code}</span>
+                                </div>`;
+                    },
+                    item: function(data, escape) {
+                        return `<div class="fw-semibold text-dark">${escape(data.text)}</div>`;
+                    }
+                }
+            };
+            
+            if (tomSelectClientesArea) tomSelectClientesArea.destroy();
+            if (tomSelectInativosArea) tomSelectInativosArea.destroy();
+            
+            tomSelectClientesArea = new TomSelect(selectClientesArea, tomConfig);
+            tomSelectInativosArea = new TomSelect(selectInativosArea, tomConfig);
+        }
+
     } catch (e) {
         console.error('Erro ao carregar dropdown de áreas:', e);
     }
@@ -85,6 +117,16 @@ async function loadCitiesDropdown() {
 
         selectCidade.innerHTML = '<option value="">Todas as cidades (None)</option>' +
             data.map(city => `<option value="${city.i_cdcidade}">${city.c_nomecidade}</option>`).join('');
+
+        if (typeof TomSelect !== 'undefined') {
+            if (tomSelectCidade) tomSelectCidade.destroy();
+            tomSelectCidade = new TomSelect(selectCidade, {
+                create: false,
+                placeholder: 'Todas as cidades (None)',
+                allowEmptyOption: true,
+                maxOptions: null
+            });
+        }
 
     } catch (e) {
         console.error('Erro ao carregar cidades:', e);

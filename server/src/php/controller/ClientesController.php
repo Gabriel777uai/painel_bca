@@ -17,7 +17,7 @@ class ClientesController extends ResponseTypeService
     private ClientModel $clientModel;
     private RequestsDatabase $db;
 
-    public function __construct(ClientModel $clientModel = null, RequestsDatabase $db = null)
+    public function __construct()
     {
         $this->clientModel = $clientModel ?? new ClientModel();
         $this->db = $db ?? new RequestsDatabase();
